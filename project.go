@@ -2,6 +2,8 @@ package forecast
 
 import (
 	"encoding/csv"
+	"encoding/json"
+	"fmt"
 	"io"
 	"strconv"
 	"strings"
@@ -40,6 +42,16 @@ func (api *API) Projects() (Projects, error) {
 		return nil, err
 	}
 	return container.Projects, nil
+}
+
+func (api *API) UpdateProject(p Project ) error {
+	var result projectsContainer
+	pd := map[string]Project { "project" : p}
+	data, err := json.Marshal(pd)
+	if err != nil {
+		return fmt.Errorf("error marshaling JSON for project: %s", err)
+	}
+	return api.put(fmt.Sprintf("projects/%d", p.ID), data, &result)
 }
 
 // ToCSV writes the projects to the supplied writer in CSV
